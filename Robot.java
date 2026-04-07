@@ -4,10 +4,17 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
+
 import edu.wpi.first.hal.HAL;
+
+import java.util.Optional;
+
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -26,7 +33,7 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
 
   public Robot() {
-    CameraServer.startAutomaticCapture();    //Code to initialize camera -B
+       //Code to initialize camera -B
   }
 
   /**
@@ -64,6 +71,13 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods. This must be called from the
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
+    SmartDashboard.putNumber("CAN Utilization %", RobotController.getCANStatus().percentBusUtilization * 100.0);
+    SmartDashboard.putNumber("Voltage", RobotController.getBatteryVoltage());
+    SmartDashboard.putNumber("CPU Temperature", RobotController.getCPUTemp());
+    SmartDashboard.putBoolean("RSL", RobotController.getRSLState());
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    SmartDashboard.putBoolean("Hub Active?", isHubActive());
+    SmartDashboard.putBoolean("Ten Second Warning", tenSecondWarning());
     CommandScheduler.getInstance().run();
   }
 
@@ -130,5 +144,87 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {
+  }
+  public boolean isHubActive() {
+  Optional<Alliance> alliance = DriverStation.getAlliance();
+  // If we have no alliance, we cannot be enabled, therefore no hub.
+  if (alliance.isEmpty()) {
+    return false;
+  }
+  // Hub is always enabled in autonomous.
+  if (DriverStation.isAutonomousEnabled()) {
+    return true;
+  }
+  // At this point, if we're not teleop enabled, there is no hub.
+  if (!DriverStation.isTeleopEnabled()) {
+    return false;
+  }
+
+  // We're teleop enabled, compute.
+  double matchTime = DriverStation.getMatchTime();
+  String gameData = DriverStation.getGameSpecificMessage();
+  // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
+  if (gameData.isEmpty()) {
+    return true;
+  }
+  boolean redInactiveFirst = false;
+  switch (gameData.charAt(0)) {
+    case 'R' -> redInactiveFirst = true;
+    case 'B' -> redInactiveFirst = false;
+    default -> {
+      // If we have invalid game data, assume hub is active.
+      return true;
+    }
+  }
+
+  // Shift was is active for blue if red won auto, or red if blue won auto.
+  boolean shift1Active = switch (alliance.get()) {
+    case Red -> !redInactiveFirst;
+    case Blue -> redInactiveFirst;
+  };
+
+  if (matchTime > 130) {
+    // Transition shift, hub is active.
+    return true;
+  } else if (matchTime > 105) {
+    // Shift 1
+    return shift1Active;
+  } else if (matchTime > 80) {
+    // Shift 2
+    return !shift1Active;
+  } else if (matchTime > 55) {
+    // Shift 3
+    return shift1Active;
+  } else if (matchTime > 30) {
+    // Shift 4
+    return !shift1Active;
+  } else {
+    // End game, hub always active.
+    return true;
+  }
+}
+  public boolean tenSecondWarning(){
+  // We're teleop enabled, compute.
+  double matchTime = DriverStation.getMatchTime();
+  
+  if (matchTime > 130) {
+    // Transition shift, hub is active.
+    return true;
+  } else if (matchTime > 105 && matchTime < 115) {
+    // Shift 1
+    return true;
+  } else if (matchTime > 80 && matchTime < 90) {
+    // Shift 2
+    return true;
+  } else if (matchTime > 55 && matchTime < 65) {
+    // Shift 3
+    return true;
+  } else if (matchTime > 30 && matchTime < 40) {
+    // Shift 4
+    return true;
+  } else {
+    // End game, hub always active.
+    return false;
+  }
   }
 }
