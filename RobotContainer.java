@@ -21,7 +21,7 @@ import frc.robot.commands.LaunchSequenceFar;
 import frc.robot.commands.LawnMowerSequence;
 import frc.robot.commands.Short;
 import frc.robot.commands.Wiggler;
-import frc.robot.commands.RightAuto;
+import frc.robot.commands.YOLO;
 import frc.robot.subsystems.CANDriveSubsystem;
 import frc.robot.subsystems.CANFuelSubsystem;
 
@@ -61,7 +61,7 @@ public class RobotContainer {
     //SmartDashboard.putStringArray("Auto List", autonomousList);
     autoChooser.setDefaultOption("Autonomous", new ExampleAuto(driveSubsystem, fuelSubsystem));
     autoChooser.addOption("Short", new Short(driveSubsystem,fuelSubsystem));
-    autoChooser.addOption("Right", new RightAuto(driveSubsystem,fuelSubsystem));
+    autoChooser.addOption("YOLO", new YOLO(driveSubsystem,fuelSubsystem));
     SmartDashboard.putData("Auto choices",autoChooser);
   }
 
