@@ -4,18 +4,23 @@
 
 package frc.robot.commands;
 
+import static frc.robot.Constants.FuelConstants.LAUNCHING_LAUNCHER_VOLTAGE;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CANFuelSubsystem;
-import static frc.robot.Constants.FuelConstants.*;
+
+import frc.robot.subsystems.CANDriveSubsystem;
+
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SpinUp extends Command {
+public class KillLaunch extends Command {
   /** Creates a new Intake. */
 
+  CANDriveSubsystem driveSubsystem;
   CANFuelSubsystem fuelSubsystem;
 
-  public SpinUp(CANFuelSubsystem fuelSystem) {
+  public KillLaunch(CANFuelSubsystem fuelSystem) {
     addRequirements(fuelSystem);
     this.fuelSubsystem = fuelSystem;
   }
@@ -24,10 +29,8 @@ public class SpinUp extends Command {
   // appropriate values for intaking
   @Override
   public void initialize() {
-    fuelSubsystem
-        .setIntakeLauncherRoller(
-            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
-    //fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Launching spin-up feeder value", SPIN_UP_FEEDER_VOLTAGE));
+    fuelSubsystem.setIntakeLauncherRoller(SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
+    fuelSubsystem.setFeederRoller(-1*SmartDashboard.getNumber("Launching feeder roller value", 0));
   }
 
   // Called every time the scheduler runs while the command is scheduled. This
@@ -39,6 +42,7 @@ public class SpinUp extends Command {
   // Called once the command ends or is interrupted. Stop the rollers
   @Override
   public void end(boolean interrupted) {
+
   }
 
   // Returns true when the command should end.

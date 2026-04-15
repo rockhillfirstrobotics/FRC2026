@@ -10,12 +10,12 @@ import frc.robot.subsystems.CANFuelSubsystem;
 import static frc.robot.Constants.FuelConstants.*;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SpinUp extends Command {
+public class LaunchFar extends Command {
   /** Creates a new Intake. */
 
   CANFuelSubsystem fuelSubsystem;
 
-  public SpinUp(CANFuelSubsystem fuelSystem) {
+  public LaunchFar(CANFuelSubsystem fuelSystem) {
     addRequirements(fuelSystem);
     this.fuelSubsystem = fuelSystem;
   }
@@ -26,8 +26,9 @@ public class SpinUp extends Command {
   public void initialize() {
     fuelSubsystem
         .setIntakeLauncherRoller(
-            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_VOLTAGE));
-    //fuelSubsystem.setFeederRoller(SmartDashboard.getNumber("Launching spin-up feeder value", SPIN_UP_FEEDER_VOLTAGE));
+            SmartDashboard.getNumber("Launching launcher roller value", LAUNCHING_LAUNCHER_FAR_VOLTAGE));
+    fuelSubsystem.setFeederRoller(-1*SmartDashboard.getNumber("Launching feeder roller value", LAUNCHING_FEEDER_VOLTAGE));
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled. This
