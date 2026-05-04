@@ -38,7 +38,7 @@ public class Drive extends Command {
   @Override
   public void execute() {
     if(controller.leftBumper().getAsBoolean()){
-      driveSubsystem.driveArcade(-controller.getLeftY() * DRIVE_SCALING, MathUtil.clamp (controller.getRightX() * ROTATION_SCALING, -0.8, 0.8));
+      driveSubsystem.driveArcade(-controller.getLeftY() * DRIVE_SCALING,controller.getRightX() * ROTATION_SCALING);
     }
     else
     {

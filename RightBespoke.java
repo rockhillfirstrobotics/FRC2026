@@ -18,17 +18,21 @@ public class RightBespoke extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new AutoDrive(driveSubsystem,0.5,  0.0).withTimeout(.5),
-      new SpinUp(ballSubsystem).withTimeout(1),
-      new Launch(ballSubsystem).withTimeout(3),
-      new AutoDrive(driveSubsystem,-0.5,  0.0).withTimeout(.1),
+      new AutoDrive(driveSubsystem,0.5,  0.0).withTimeout(.9), //back it up
+      new SpinUp(ballSubsystem).withTimeout(1), 
+      new Launch(ballSubsystem).withTimeout(3), //shoot the load
+      new AutoDrive(driveSubsystem,-0.5,  0.0).withTimeout(.1), //shimmy shimmy
       new AutoDrive(driveSubsystem,0.5,  0.0).withTimeout(.1),
       new AutoDrive(driveSubsystem,-0.5,  0.0).withTimeout(.1),
-      new Launch(ballSubsystem).withTimeout(3),
-      new AutoDrive(driveSubsystem, 0, -.5).withTimeout(.5),
+      new Launch(ballSubsystem).withTimeout(3), //finish shooting
+      new AutoDrive(driveSubsystem, 0, -.5).withTimeout(.5), //turn it around
       new ParallelDeadlineGroup(
-        new Launch(ballSubsystem).withTimeout(4),
-        new AutoDrive(driveSubsystem, .5, 0))
+        new Intake(ballSubsystem).withTimeout(3), //lawn mower
+        new AutoDrive(driveSubsystem, .5, 0)), //drive to the middle
+      new AutoDrive(driveSubsystem, 0, .5).withTimeout(.9),
+      new ParallelDeadlineGroup(
+        new Intake(ballSubsystem).withTimeout(3), //lawn mower
+        new AutoDrive(driveSubsystem, .5, 0)) //drive to the middle
     );
   }
 }

@@ -18,14 +18,14 @@ public class Wiggler extends SequentialCommandGroup {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-      new ParallelDeadlineGroup(
-        new KillLaunch(fuelSubsystem).withTimeout(.3),
+      //new ParallelDeadlineGroup(
+        //new KillLaunch(fuelSubsystem).withTimeout(.3),
          new SequentialCommandGroup(
             new AutoDrive(driveSubsystem, -.5, 0).withTimeout(0.1),
             new AutoDrive(driveSubsystem, .5, 0).withTimeout(0.1),
             new AutoDrive(driveSubsystem, -.5, 0).withTimeout(0.1)
             )
-      )
-    );
+      );
+    //);
   }
 }
